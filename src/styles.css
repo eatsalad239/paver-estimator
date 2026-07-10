@@ -1,0 +1,369 @@
+/* =============================================================================
+   Paver Estimator — all styles scoped under .pest-root.
+   - No global resets, no bare element selectors that could leak into the host.
+   - Brand colors come from CSS custom properties set by JS from config.
+   - The scoped `box-sizing` reset only touches descendants of .pest-root.
+   ============================================================================= */
+
+.pest-root,
+.pest-root *,
+.pest-root *::before,
+.pest-root *::after {
+  box-sizing: border-box;
+}
+
+.pest-root {
+  /* Brand variables (overridden inline from config; these are safe fallbacks) */
+  --pest-primary: #0b5d3b;
+  --pest-accent: #f4a300;
+  --pest-text: #1a2b22;
+  --pest-muted: #5b6b63;
+  --pest-bg: #ffffff;
+  --pest-card: #f5f7f5;
+  --pest-border: #dfe6e1;
+  --pest-radius: 14px;
+  --pest-shadow: 0 6px 24px rgba(16, 40, 28, 0.10);
+
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--pest-bg);
+  color: var(--pest-text);
+  border-radius: var(--pest-radius);
+  box-shadow: var(--pest-shadow);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Header ------------------------------------------------------------- */
+.pest-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.pest-logo {
+  height: 34px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+.pest-brandname {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--pest-primary);
+}
+
+/* --- Progress bar ------------------------------------------------------- */
+.pest-progress {
+  margin-bottom: 18px;
+}
+.pest-progress-track {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--pest-border);
+  overflow: hidden;
+}
+.pest-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--pest-primary);
+  transition: width 0.35s ease;
+}
+.pest-progress-label {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--pest-muted);
+}
+
+/* --- Step layout & transition ------------------------------------------ */
+.pest-step {
+  animation: pest-fade-in 0.28s ease both;
+}
+@keyframes pest-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pest-step { animation: none; }
+  .pest-progress-fill { transition: none; }
+}
+
+.pest-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.pest-subtitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--pest-muted);
+}
+
+/* --- Option cards ------------------------------------------------------- */
+.pest-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pest-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border: 2px solid var(--pest-border);
+  border-radius: 12px;
+  background: var(--pest-card);
+  color: var(--pest-text);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+}
+.pest-option:hover {
+  border-color: var(--pest-primary);
+}
+.pest-option:active {
+  transform: scale(0.99);
+}
+.pest-option:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--pest-primary) 40%, transparent);
+  outline-offset: 2px;
+}
+.pest-option.is-selected {
+  border-color: var(--pest-primary);
+  box-shadow: inset 0 0 0 1px var(--pest-primary);
+}
+.pest-option-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.pest-option-body { flex: 1 1 auto; }
+.pest-option-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+.pest-option-desc {
+  font-size: 13px;
+  color: var(--pest-muted);
+}
+.pest-option-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pest-primary);
+  white-space: nowrap;
+}
+
+/* --- Custom sqft input -------------------------------------------------- */
+.pest-field { margin-top: 12px; }
+.pest-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.pest-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--pest-border);
+  border-radius: 10px;
+  font: inherit;
+  color: var(--pest-text);
+  background: #fff;
+}
+.pest-input:focus {
+  outline: none;
+  border-color: var(--pest-primary);
+}
+.pest-input.is-invalid {
+  border-color: #d64545;
+}
+.pest-input-error {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #d64545;
+}
+.pest-suffix {
+  margin-left: 8px;
+  color: var(--pest-muted);
+  font-size: 13px;
+}
+
+/* --- Consent + checkbox ------------------------------------------------- */
+.pest-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 12px;
+  background: var(--pest-card);
+  border-radius: 10px;
+}
+.pest-consent input[type='checkbox'] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  accent-color: var(--pest-primary);
+}
+.pest-consent-text {
+  font-size: 12px;
+  color: var(--pest-muted);
+  line-height: 1.4;
+}
+.pest-consent-text a {
+  color: var(--pest-primary);
+  font-weight: 600;
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+.pest-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.pest-btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.08s ease, background 0.15s ease;
+}
+.pest-btn:active { transform: scale(0.99); }
+.pest-btn-primary {
+  flex: 1 1 auto;
+  background: var(--pest-primary);
+  color: #fff;
+}
+.pest-btn-primary:hover { opacity: 0.92; }
+.pest-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pest-btn-ghost {
+  background: transparent;
+  color: var(--pest-muted);
+  padding: 14px 8px;
+}
+.pest-btn-ghost:hover { color: var(--pest-text); }
+
+/* --- Result screen ------------------------------------------------------ */
+.pest-result-lead {
+  font-size: 14px;
+  color: var(--pest-muted);
+  margin: 0 0 6px;
+}
+.pest-range {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px 0 4px;
+  flex-wrap: wrap;
+}
+.pest-range-num {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--pest-accent);
+  line-height: 1.05;
+}
+.pest-range-dash {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--pest-muted);
+}
+.pest-range-min {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--pest-accent);
+}
+.pest-range-caption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--pest-muted);
+  margin: 2px 0 14px;
+}
+.pest-summary {
+  background: var(--pest-card);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--pest-text);
+  margin-bottom: 14px;
+}
+.pest-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+}
+.pest-summary-row .pest-summary-key { color: var(--pest-muted); }
+.pest-summary-row .pest-summary-val { font-weight: 600; text-align: right; }
+
+.pest-closing {
+  background: color-mix(in srgb, var(--pest-primary) 8%, transparent);
+  border-left: 3px solid var(--pest-primary);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.pest-consult {
+  background: color-mix(in srgb, var(--pest-accent) 14%, transparent);
+  border-left: 3px solid var(--pest-accent);
+}
+.pest-cta-call {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: var(--pest-primary);
+  color: #fff;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.pest-cta-call:hover { opacity: 0.92; }
+.pest-restart {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--pest-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px;
+}
+.pest-restart:hover { color: var(--pest-text); }
+
+/* --- Footer ------------------------------------------------------------- */
+.pest-footer {
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--pest-muted);
+  text-align: center;
+}
+
+/* --- Fallback for browsers without color-mix (older mobile) ------------- */
+@supports not (color: color-mix(in srgb, red 50%, transparent)) {
+  .pest-option:focus-visible { outline-color: var(--pest-primary); }
+  .pest-closing { background: var(--pest-card); }
+  .pest-consult { background: var(--pest-card); }
+}

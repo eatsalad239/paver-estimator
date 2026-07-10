@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paver Estimator — Dev</title>
+    <style>
+      /* Deliberately opinionated host-page styles to prove the widget's styles
+         are scoped and don't leak (and aren't affected by the host). */
+      body {
+        margin: 0;
+        font-family: Georgia, 'Times New Roman', serif;
+        background: #eef1f4;
+        color: #222;
+      }
+      .host-hero {
+        background: #14324a;
+        color: #fff;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .host-hero h1 { margin: 0 0 6px; font-size: 26px; }
+      .host-hero p { margin: 0; opacity: 0.85; }
+      .host-wrap { padding: 24px 16px 60px; }
+      .host-note {
+        max-width: 480px;
+        margin: 0 auto 16px;
+        text-align: center;
+        font-size: 13px;
+        color: #55606b;
+      }
+      button { /* hostile global to test scoping */ font-family: cursive; }
+    </style>
+  </head>
+  <body>
+    <div class="host-hero">
+      <h1>Example Host Site</h1>
+      <p>The widget below is rendered by <code>src/demo.jsx</code></p>
+    </div>
+    <div class="host-wrap">
+      <p class="host-note">Dev mode — submitted leads are logged to the browser console.</p>
+      <div id="paver-estimator"></div>
+    </div>
+    <script type="module" src="/src/demo.jsx"></script>
+  </body>
+</html>

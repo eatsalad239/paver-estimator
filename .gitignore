@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output (GitHub Actions rebuilds this from source)
+dist/
+
+# test / coverage
+coverage/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# local editor / preview tooling
+.claude/
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.local
+.env
+.env.*
