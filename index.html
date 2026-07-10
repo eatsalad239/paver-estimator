@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paver Instant Estimate — Live Demo</title>
+    <meta
+      name="description"
+      content="Live demo of the embeddable Paver Instant Estimate widget."
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #eef1f4;
+        color: #1a2b22;
+      }
+      .demo-hero {
+        background: #0b5d3b;
+        color: #fff;
+        padding: 40px 20px 28px;
+        text-align: center;
+      }
+      .demo-hero h1 { margin: 0 0 6px; font-size: 24px; }
+      .demo-hero p { margin: 0; opacity: 0.9; font-size: 14px; }
+      .demo-wrap { padding: 24px 16px 40px; }
+      .demo-snippet {
+        max-width: 560px;
+        margin: 28px auto 0;
+        background: #0f1a15;
+        color: #d7e6dd;
+        border-radius: 10px;
+        padding: 16px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+      .demo-snippet h2 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #8fb3a1;
+      }
+      .demo-snippet pre { margin: 0; white-space: pre; }
+    </style>
+  </head>
+  <body>
+    <div class="demo-hero">
+      <h1>Paver Instant Estimate</h1>
+      <p>This page embeds the real production bundle — exactly as a client site would.</p>
+    </div>
+
+    <div class="demo-wrap">
+      <!-- Optional per-site overrides. Delete this block to use built-in defaults. -->
+      <script>
+        window.PAVER_ESTIMATOR_CONFIG = {
+          businessName: 'SWFL Paver Pros',
+          phone: '(239) 555-0142',
+          // webhookUrl: 'https://services.leadconnectorhq.com/hooks/XXXX/webhook-trigger/YYYY',
+        };
+      </script>
+
+      <!-- The embed: this is the entire snippet a client pastes. -->
+      <div id="paver-estimator"></div>
+      <script src="./paver-estimator.js"></script>
+
+      <div class="demo-snippet">
+        <h2>Embed snippet</h2>
+        <pre>&lt;div id="paver-estimator"&gt;&lt;/div&gt;
+&lt;script src="https://eatsalad239.github.io/paver-estimator/paver-estimator.js"&gt;&lt;/script&gt;</pre>
+      </div>
+    </div>
+  </body>
+</html>
