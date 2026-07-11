@@ -367,3 +367,146 @@
   .pest-closing { background: var(--pest-card); }
   .pest-consult { background: var(--pest-card); }
 }
+
+/* --- Photo upload ------------------------------------------------------- */
+.pest-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 28px 16px;
+  border: 2px dashed var(--pest-border);
+  border-radius: 12px;
+  background: var(--pest-card);
+  color: var(--pest-text);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease;
+}
+.pest-upload:hover { border-color: var(--pest-primary); }
+.pest-upload:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--pest-primary) 40%, transparent);
+  outline-offset: 2px;
+}
+.pest-upload-icon { font-size: 30px; line-height: 1; }
+.pest-upload-text { font-weight: 700; font-size: 15px; }
+.pest-upload-sub { font-size: 12px; color: var(--pest-muted); }
+.pest-retake {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: var(--pest-primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px;
+}
+.pest-photo-consult { margin-top: 6px; }
+.pest-result-photo { border-radius: 10px; margin-bottom: 12px; }
+
+/* --- Before / after slider ---------------------------------------------- */
+.pest-ba {
+  position: relative;
+  width: 100%;
+  margin: 6px 0 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  user-select: none;
+  touch-action: none;
+  line-height: 0;
+}
+.pest-ba-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 340px;
+  object-fit: cover;
+}
+.pest-ba-before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.pest-ba-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 42%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 58%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.pest-ba-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+.pest-ba-knob {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: -2px;
+  pointer-events: none;
+}
+.pest-ba-tag {
+  position: absolute;
+  bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 8px;
+  border-radius: 99px;
+  pointer-events: none;
+  line-height: 1.2;
+}
+.pest-ba-tag-before { left: 8px; }
+.pest-ba-tag-after { right: 8px; }
+.pest-ba-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.pest-ba-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 340px;
+  cursor: ew-resize;
+}
+.pest-ba-range::-moz-range-thumb {
+  width: 44px;
+  height: 340px;
+  border: none;
+  background: transparent;
+  cursor: ew-resize;
+}

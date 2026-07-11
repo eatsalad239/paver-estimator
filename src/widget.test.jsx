@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PaverEstimator } from './widget.jsx';
 import { resolveConfig } from './config.js';
@@ -11,8 +11,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+// The photo step is optional — skip through it (no upload) to reach the contact gate.
+async function skipPhoto(user) {
+  expect(screen.getByText('See the transformation')).toBeDefined();
+  await user.click(screen.getByRole('button', { name: /continue/i }));
+}
+
 describe('PaverEstimator — full wizard flow', () => {
-  it('walks service → area → condition → contact gate → estimate reveal', async () => {
+  it('walks service → area → condition → photo → contact gate → estimate reveal', async () => {
     const user = userEvent.setup();
     render(<PaverEstimator config={resolveConfig({ businessName: 'Test Pavers' })} />);
 
@@ -28,7 +34,10 @@ describe('PaverEstimator — full wizard flow', () => {
     expect(screen.getByText('What condition are they in?')).toBeDefined();
     await user.click(screen.getByText('Faded / dull'));
 
-    // Step 4 — contact gate. Submitting while invalid surfaces errors but does NOT reveal.
+    // Step 4 — photo (optional): skip
+    await skipPhoto(user);
+
+    // Step 5 — contact gate. Submitting while invalid surfaces errors but does NOT reveal.
     const submit = screen.getByRole('button', { name: /See my estimate/i });
     await user.click(submit);
     expect(screen.queryByText('$1,035')).toBeNull(); // no reveal
@@ -47,9 +56,9 @@ describe('PaverEstimator — full wizard flow', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(submit);
 
-    // Reveal — sealing $1.50–$2.50 × 600 × 1.15 (faded) = $1,035–$1,725
+    // Reveal — sealing $1.50–$3.00 × 600 × 1.15 (faded) = $1,035–$2,070
     expect(screen.getByText('$1,035')).toBeDefined();
-    expect(screen.getByText('$1,725')).toBeDefined();
+    expect(screen.getByText('$2,070')).toBeDefined();
     expect(screen.getByText(/Text us photos of your pavers/i)).toBeDefined();
   });
 
@@ -65,6 +74,7 @@ describe('PaverEstimator — full wizard flow', () => {
     await user.click(screen.getByRole('button', { name: /Continue/i }));
 
     await user.click(screen.getByText('Good'));
+    await skipPhoto(user);
 
     await user.type(screen.getByLabelText('Full name'), 'Bob Vila');
     await user.type(screen.getByLabelText('Mobile phone'), '(239) 555-0142');
@@ -72,9 +82,9 @@ describe('PaverEstimator — full wizard flow', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /See my estimate/i }));
 
-    // install $8–$12 × 1000 = $8,000–$12,000
-    expect(screen.getByText('$8,000')).toBeDefined();
+    // install $12–$24 × 1000 = $12,000–$24,000
     expect(screen.getByText('$12,000')).toBeDefined();
+    expect(screen.getByText('$24,000')).toBeDefined();
     expect(screen.getByText(/on-site design consult is required/i)).toBeDefined();
     expect(screen.queryByText(/Text us photos/i)).toBeNull();
     // Custom area label is not double-printed on the summary row.
@@ -92,6 +102,7 @@ describe('PaverEstimator — full wizard flow', () => {
     await user.click(screen.getByText('Pressure Washing'));
     await user.click(screen.getByText('Pool Deck')); // 800 sqft
     await user.click(screen.getByText('Heavy mold & stains'));
+    await skipPhoto(user);
 
     await user.type(screen.getByLabelText('Full name'), 'Jane Doe');
     await user.type(screen.getByLabelText('Mobile phone'), '2395550142');
@@ -112,6 +123,7 @@ describe('PaverEstimator — full wizard flow', () => {
       areaLabel: 'Pool Deck',
       sqft: 800,
       condition: 'heavy',
+      photoProvided: false,
       source: 'paver-estimator',
     });
     // estimate + timestamp present
@@ -131,15 +143,16 @@ describe('PaverEstimator — full wizard flow', () => {
     await user.click(screen.getByText('Paver Sealing'));
     await user.click(screen.getByText('2-Car Driveway'));
     await user.click(screen.getByText('Good'));
+    await skipPhoto(user);
     await user.type(screen.getByLabelText('Full name'), 'Jane Doe');
     await user.type(screen.getByLabelText('Mobile phone'), '2395550142');
     await user.type(screen.getByLabelText('Email'), 'jane@example.com');
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /See my estimate/i }));
 
-    // Estimate shows despite the rejected webhook
+    // Estimate shows despite the rejected webhook (sealing 600 good = $900–$1,800)
     expect(screen.getByText('$900')).toBeDefined();
-    expect(screen.getByText('$1,500')).toBeDefined();
+    expect(screen.getByText('$1,800')).toBeDefined();
   });
 
   it('displays a labeled minimum-job price (not a $x–$x range) for tiny jobs', async () => {
@@ -148,16 +161,49 @@ describe('PaverEstimator — full wizard flow', () => {
 
     await user.click(screen.getByText('Pressure Washing'));
     await user.click(screen.getByText('Custom size'));
-    await user.type(screen.getByLabelText(/square footage/i), '100'); // $35–$75 → floored
+    await user.type(screen.getByLabelText(/square footage/i), '100'); // $35–$80 → floored
     await user.click(screen.getByRole('button', { name: /Continue/i }));
     await user.click(screen.getByText('Good'));
+    await skipPhoto(user);
     await user.type(screen.getByLabelText('Full name'), 'Jane Doe');
     await user.type(screen.getByLabelText('Mobile phone'), '2395550142');
     await user.type(screen.getByLabelText('Email'), 'jane@example.com');
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: /See my estimate/i }));
 
-    expect(screen.getByText('$150')).toBeDefined();
+    expect(screen.getByText('$175')).toBeDefined();
     expect(screen.getByText('minimum job price')).toBeDefined();
+  });
+
+  it('shows a simulated before/after slider after a photo is uploaded (sealing)', async () => {
+    // jsdom lacks createObjectURL — stub it for this test.
+    const origCreate = URL.createObjectURL;
+    const origRevoke = URL.revokeObjectURL;
+    URL.createObjectURL = () => 'blob:mock-photo';
+    URL.revokeObjectURL = () => {};
+    try {
+      const user = userEvent.setup();
+      render(<PaverEstimator config={resolveConfig()} />);
+
+      await user.click(screen.getByText('Paver Sealing'));
+      await user.click(screen.getByText('2-Car Driveway'));
+      await user.click(screen.getByText('Good'));
+
+      // On the photo step, upload a photo (fireEvent bypasses visibility checks on the hidden input)
+      expect(screen.getByText('See the transformation')).toBeDefined();
+      const file = new File(['x'], 'pavers.png', { type: 'image/png' });
+      fireEvent.change(screen.getByLabelText('Upload a photo of your pavers'), { target: { files: [file] } });
+
+      // The before/after comparison renders, with the wet-look filter applied to
+      // the "after" image and the reveal clip applied to the "before" image.
+      const afterImg = screen.getByAltText('After sealing (simulated)');
+      const beforeImg = screen.getByAltText('Before');
+      expect(afterImg.style.filter).toContain('saturate'); // wet-look transform is wired
+      expect(beforeImg.style.clipPath).toContain('inset'); // drag-to-reveal clip is wired
+      expect(screen.getByLabelText('Slide to compare before and after')).toBeDefined();
+    } finally {
+      URL.createObjectURL = origCreate;
+      URL.revokeObjectURL = origRevoke;
+    }
   });
 });

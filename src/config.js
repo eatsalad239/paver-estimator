@@ -52,20 +52,27 @@ export const defaultConfig = {
   privacyUrl: '', // e.g. 'https://yoursite.com/privacy'
 
   // ---------------------------------------------------------------------------
-  //  ██  PRICING — REPLACE WITH MIKE'S REAL NUMBERS  ██
-  //  These are PLACEHOLDERS only. Rates are $ per square foot (min/max spread),
-  //  plus a minimum job price floor per service.
+  //  PRICING — Southwest-Florida industry-standard defaults (2025–26).
+  //  Rates are $ per square foot (min/max spread) with a minimum job-price
+  //  floor. These are REAL market ranges (not random placeholders), but always
+  //  confirm Mike's exact numbers and override here (or per-site via
+  //  PAVER_ESTIMATOR_CONFIG.pricing).
+  //
+  //  Sources: Fort Myers paver sealing $1.50–$3.25/sqft (vargaspaversealing.com);
+  //  FL paver sealing $1.25–$3.50 (abuffandbeyondfl.com); paver cleaning / prep
+  //  pressure wash $0.35–$0.80/sqft (angi.com, abuffandbeyondfl.com); S. FL
+  //  install $10–$20/sqft, FL driveway $12–$25/sqft (deckanddrive.com,
+  //  jaxtellerbrickpavers.com). Ranges intentionally sit inside these bounds.
   // ---------------------------------------------------------------------------
   pricing: {
-    // Paver sealing: $1.50–$2.50 / sqft, never less than $500 for a job.
-    sealing: { min: 1.5, max: 2.5, minPrice: 500 }, // « REPLACE
-    // Pressure washing: $0.35–$0.75 / sqft, $150 minimum.
-    pressureWashing: { min: 0.35, max: 0.75, minPrice: 150 }, // « REPLACE
-    // Paver installation: $8–$12 / sqft, $2,500 minimum (design consult required).
-    install: { min: 8, max: 12, minPrice: 2500 }, // « REPLACE
+    sealing: { min: 1.5, max: 3.0, minPrice: 500 }, // confirm w/ Mike
+    pressureWashing: { min: 0.35, max: 0.8, minPrice: 175 }, // confirm w/ Mike
+    install: { min: 12, max: 24, minPrice: 3000 }, // confirm w/ Mike
   },
 
   // Condition multipliers — worse condition = more prep/material = higher price.
+  // (Heavy cases can need old-sealer stripping at +$2.50–$3/sqft — exactly why
+  //  the photo + "text us photos" confirmation matters.)
   conditionMultipliers: {
     good: 1.0,
     faded: 1.15,
@@ -77,10 +84,11 @@ export const defaultConfig = {
 
   // --- Options shown in the wizard ------------------------------------------
   // `id` values here are the keys used in `pricing` above.
+  // `preview` selects the photo "after" simulation: 'wetlook' | 'clean' | 'consult'.
   services: [
-    { id: 'sealing', label: 'Paver Sealing', desc: 'Protect & enrich the color of your pavers', icon: '🛡️' },
-    { id: 'pressureWashing', label: 'Pressure Washing', desc: 'Deep-clean and lift mold, dirt & stains', icon: '💦' },
-    { id: 'install', label: 'Paver Installation', desc: 'New paver design & installation', icon: '🧱', requiresConsult: true },
+    { id: 'sealing', label: 'Paver Sealing', desc: 'Protect & enrich the color of your pavers', icon: '🛡️', preview: 'wetlook' },
+    { id: 'pressureWashing', label: 'Pressure Washing', desc: 'Deep-clean and lift mold, dirt & stains', icon: '💦', preview: 'clean' },
+    { id: 'install', label: 'Paver Installation', desc: 'New paver design & installation', icon: '🧱', requiresConsult: true, preview: 'consult' },
   ],
 
   // Area presets (sqft). The `custom` entry (sqft: null) reveals the number input.
@@ -98,6 +106,23 @@ export const defaultConfig = {
     { id: 'faded', label: 'Faded / dull', desc: 'Color has washed out', multiplierKey: 'faded' },
     { id: 'heavy', label: 'Heavy mold & stains', desc: 'Lots of buildup or discoloration', multiplierKey: 'heavy' },
   ],
+
+  // --- Photo "after" preview -------------------------------------------------
+  // 100% client-side: the uploaded photo NEVER leaves the browser (no upload,
+  // no server, no API key). The "after" is a CSS-filter SIMULATION of the real
+  // physical effect — a sealer gives a richer, darker "wet look"; washing
+  // brightens and lifts dullness. Always labeled "simulated" so it's honest.
+  photo: {
+    enabled: true, // set false to drop the photo step entirely
+    maxSizeMB: 15,
+    prompt: 'See the transformation',
+    hint: 'Upload a photo of your pavers — it stays on your device.',
+  },
+  // Per-preview CSS filter for the "after" image, plus an optional gloss sheen.
+  previewFilters: {
+    wetlook: { css: 'saturate(1.5) contrast(1.12) brightness(0.92)', sheen: true, afterLabel: 'After sealing' },
+    clean: { css: 'brightness(1.14) contrast(1.08) saturate(1.05)', sheen: false, afterLabel: 'After cleaning' },
+  },
 
   // --- Copy on the result screen --------------------------------------------
   closingLine: 'Text us photos of your pavers to confirm your exact price — no site visit needed.',

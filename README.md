@@ -2,8 +2,9 @@
 
 A mobile-first, multi-step **instant-estimate lead-capture widget** for paver
 companies (sealing, pressure washing, installation). A visitor picks a service →
-area → condition → enters contact info, and the estimate range is revealed only
-**after** they submit — capturing the lead in the process.
+area → condition → **optionally uploads a photo to see a simulated before/after** →
+enters contact info, and the estimate range is revealed only **after** they submit —
+capturing the lead in the process.
 
 Built with **React + Vite**. Ships as a **single self-contained `<script>`** you
 can drop onto any site (GoHighLevel, WordPress, plain HTML, …). Hosts itself free
@@ -80,8 +81,8 @@ src/
   mount.jsx        ★ IIFE entry: auto-mounts onto #paver-estimator, reads overrides
   demo.jsx           dev-only entry
   styles.css         namespaced (.pest-*) styles, brand via CSS variables
-  components/        ProgressBar, OptionCard, EstimateRange
-  steps/             ServiceStep, AreaStep, ConditionStep, ContactStep, ResultStep
+  components/        ProgressBar, OptionCard, EstimateRange, BeforeAfter (photo slider)
+  steps/             ServiceStep, AreaStep, ConditionStep, PhotoStep, ContactStep, ResultStep
   *.test.js(x)       vitest tests
 .github/workflows/deploy.yml   builds + deploys to GitHub Pages on push to main
 demo/pages.html                built → dist/index.html (loads the real bundle)
@@ -93,14 +94,15 @@ scripts/copy-demo.mjs          copies the demo page + .nojekyll into dist/
 ## Changing the pricing (Mike's real numbers)
 
 All pricing lives in **[`src/config.js`](src/config.js)** under `pricing` and
-`conditionMultipliers`. The current values are **placeholders** — replace them:
+`conditionMultipliers`. The defaults are **current SWFL industry-standard ranges**
+(2025–26, sourced below) — confirm Mike's exact numbers and adjust:
 
 ```js
 pricing: {
   //          $/sqft min   $/sqft max   minimum job price
-  sealing:         { min: 1.5,  max: 2.5,  minPrice: 500 },   // « replace
-  pressureWashing: { min: 0.35, max: 0.75, minPrice: 150 },   // « replace
-  install:         { min: 8,    max: 12,   minPrice: 2500 },  // « replace
+  sealing:         { min: 1.5,  max: 3.0,  minPrice: 500 },
+  pressureWashing: { min: 0.35, max: 0.8,  minPrice: 175 },
+  install:         { min: 12,   max: 24,   minPrice: 3000 },
 },
 
 conditionMultipliers: {
@@ -117,6 +119,13 @@ low  = round(minRate × sqft × conditionMultiplier), floored at minPrice
 high = round(maxRate × sqft × conditionMultiplier), floored at minPrice (and ≥ low)
 ```
 
+**Sources for the defaults:** Fort Myers paver sealing $1.50–$3.25/sqft
+([vargaspaversealing.com](https://vargaspaversealing.com/blog/how-much-does-paver-sealing-cost-in-fort-myers-fl/)),
+FL sealing $1.25–$3.50 ([abuffandbeyondfl.com](https://abuffandbeyondfl.com/blog/how-much-does-it-cost-to-seal-pavers-in-florida/)),
+paver cleaning / prep wash $0.35–$0.80/sqft ([angi.com](https://www.angi.com/articles/how-much-pressure-wash-and-reapply-sand-paver-patio.htm)),
+FL install $10–$25/sqft ([deckanddrive.com](https://deckanddrive.com/blog/cost-to-install-pavers-south-florida/),
+[jaxtellerbrickpavers.com](https://jaxtellerbrickpavers.com/how-much-does-a-paver-driveway-cost-in-florida/)).
+
 The area presets (sqft) and the custom-input bounds are also in `config.js`
 (`areas`, `customSqft`). After editing, run `npm test` — the pricing tests assert
 the floor, the multipliers, and custom sqft.
@@ -124,6 +133,31 @@ the floor, the multipliers, and custom sqft.
 > You can change pricing **without editing code** on a per-site basis by putting
 > a `pricing` object in `window.PAVER_ESTIMATOR_CONFIG`. Editing `config.js` +
 > rebuilding changes the default for *every* site.
+
+---
+
+## Photo "after" preview
+
+Customers can optionally upload a photo of their pavers and see an instant
+**before/after** — a drag-to-reveal slider that simulates the result:
+
+- **Sealing** → a "wet look" (richer, darker, glossy) — literally the physical
+  effect a sealer produces.
+- **Pressure washing** → a brighter, cleaner finish.
+- **Installation** → can't be simulated from a photo, so the upload is simply kept
+  and framed for the on-site design consult.
+
+**The photo never leaves the browser.** It's processed entirely client-side via a
+CSS filter (no upload, no server, no API key) — fast, free, and private. It's a
+clearly labeled *simulation*, not an AI render. Tune the look per client in
+`config.previewFilters`, or drop the whole step with `photo.enabled: false`. The
+lead payload includes `photoProvided` so you know who engaged with it.
+
+> **Want photorealistic AI renders instead?** That needs a small serverless proxy
+> (e.g. a Cloudflare Worker) to hold an image-model API key, plus per-image cost
+> and a few seconds of latency — it can't live in a purely static bundle. The
+> current client-side preview is the drop-in, zero-cost path; the AI version is a
+> clean phase-2 upgrade.
 
 ---
 
@@ -142,7 +176,8 @@ On submit, the widget POSTs this JSON to `webhookUrl`:
   "sqft": 600,
   "condition": "faded",
   "estimateLow": 1035,
-  "estimateHigh": 1725,
+  "estimateHigh": 2070,
+  "photoProvided": false,
   "source": "paver-estimator",
   "timestamp": "2026-07-09T18:20:00.000Z"
 }
@@ -228,7 +263,8 @@ npm test
 - `src/pricing.test.js` — min-price floor, condition multipliers, custom sqft, rounding, guards.
 - `src/validation.test.js` — US phone formats, email, name, the submit/consent gate.
 - `src/widget.test.jsx` — full wizard flow, estimate reveal, install consult line,
-  webhook payload, graceful webhook failure, minimum-job display.
+  webhook payload (incl. `photoProvided`), graceful webhook failure, minimum-job
+  display, and the photo upload → before/after preview.
 
 ---
 

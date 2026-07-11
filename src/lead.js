@@ -5,7 +5,7 @@
  * Build the exact JSON payload posted to the CRM / logged to console.
  * Shape is stable — GHL inbound-webhook field mappings depend on these keys.
  */
-export function buildLeadPayload({ contact, service, areaLabel, sqft, condition, estimate }, timestamp) {
+export function buildLeadPayload({ contact, service, areaLabel, sqft, condition, estimate, photoProvided }, timestamp) {
   return {
     name: contact.name.trim(),
     phone: contact.phone.trim(),
@@ -17,6 +17,7 @@ export function buildLeadPayload({ contact, service, areaLabel, sqft, condition,
     condition,
     estimateLow: estimate.low,
     estimateHigh: estimate.high,
+    photoProvided: photoProvided === true, // did the customer engage with the photo preview?
     source: 'paver-estimator',
     timestamp: timestamp || new Date().toISOString(),
   };
