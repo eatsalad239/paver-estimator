@@ -144,8 +144,10 @@ Customers can optionally upload a photo of their pavers and see an instant
 - **Sealing** → a "wet look" (richer, darker, glossy) — literally the physical
   effect a sealer produces.
 - **Pressure washing** → a brighter, cleaner finish.
-- **Installation** → can't be simulated from a photo, so the upload is simply kept
-  and framed for the on-site design consult.
+- **Installation** → an illustrative "new-paver look" enhancement, plus a note that
+  the on-site design consult finalizes the actual result. (A filter can't add new
+  pavers to a bare surface — for a true install preview, drop in Mike's real
+  before/after project photos, or use the AI upgrade below.)
 
 **The photo never leaves the browser.** It's processed entirely client-side via a
 CSS filter (no upload, no server, no API key) — fast, free, and private. It's a

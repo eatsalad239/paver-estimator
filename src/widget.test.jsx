@@ -206,4 +206,31 @@ describe('PaverEstimator — full wizard flow', () => {
       URL.revokeObjectURL = origRevoke;
     }
   });
+
+  it('shows a working before/after for paver installation too (new-paver look + consult note)', async () => {
+    const origCreate = URL.createObjectURL;
+    const origRevoke = URL.revokeObjectURL;
+    URL.createObjectURL = () => 'blob:mock-photo';
+    URL.revokeObjectURL = () => {};
+    try {
+      const user = userEvent.setup();
+      render(<PaverEstimator config={resolveConfig()} />);
+
+      await user.click(screen.getByText('Paver Installation'));
+      await user.click(screen.getByText('2-Car Driveway'));
+      await user.click(screen.getByText('Good'));
+
+      expect(screen.getByText('See the transformation')).toBeDefined();
+      const file = new File(['x'], 'yard.png', { type: 'image/png' });
+      fireEvent.change(screen.getByLabelText('Upload a photo of your pavers'), { target: { files: [file] } });
+
+      // Install now renders the before/after slider (previously it showed no slider).
+      expect(screen.getByAltText('New-paver look (simulated)')).toBeDefined();
+      expect(screen.getByAltText('Before')).toBeDefined();
+      expect(screen.getByText(/design consult finalizes your new install/i)).toBeDefined();
+    } finally {
+      URL.createObjectURL = origCreate;
+      URL.revokeObjectURL = origRevoke;
+    }
+  });
 });

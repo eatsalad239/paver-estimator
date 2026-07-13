@@ -88,7 +88,7 @@ export const defaultConfig = {
   services: [
     { id: 'sealing', label: 'Paver Sealing', desc: 'Protect & enrich the color of your pavers', icon: '🛡️', preview: 'wetlook' },
     { id: 'pressureWashing', label: 'Pressure Washing', desc: 'Deep-clean and lift mold, dirt & stains', icon: '💦', preview: 'clean' },
-    { id: 'install', label: 'Paver Installation', desc: 'New paver design & installation', icon: '🧱', requiresConsult: true, preview: 'consult' },
+    { id: 'install', label: 'Paver Installation', desc: 'New paver design & installation', icon: '🧱', requiresConsult: true, preview: 'renew' },
   ],
 
   // Area presets (sqft). The `custom` entry (sqft: null) reveals the number input.
@@ -119,9 +119,15 @@ export const defaultConfig = {
     hint: 'Upload a photo of your pavers — it stays on your device.',
   },
   // Per-preview CSS filter for the "after" image, plus an optional gloss sheen.
+  // A filter enhances the surface ALREADY in the photo. 'renew' (install) is an
+  // illustrative "fresh, sealed pavers" look — it can't add new pavers to a bare
+  // surface, so the install result screen also shows the design-consult note.
+  // For a true new-paver preview, use real before/after project photos or the AI
+  // upgrade (see README).
   previewFilters: {
     wetlook: { css: 'saturate(1.5) contrast(1.12) brightness(0.92)', sheen: true, afterLabel: 'After sealing' },
     clean: { css: 'brightness(1.14) contrast(1.08) saturate(1.05)', sheen: false, afterLabel: 'After cleaning' },
+    renew: { css: 'saturate(1.55) contrast(1.2) brightness(1.05)', sheen: true, afterLabel: 'New-paver look' },
   },
 
   // --- Copy on the result screen --------------------------------------------

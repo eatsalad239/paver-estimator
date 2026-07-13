@@ -3,13 +3,13 @@ import BeforeAfter from '../components/BeforeAfter.jsx';
 
 // Step — optional photo upload with an instant "after" preview.
 // The photo is turned into a local object URL and never uploaded anywhere.
-// For sealing/washing we show a before/after slider; for installation (which
-// can't be simulated from a photo) we just keep the photo for the design consult.
+// Any service with a `previewFilters` entry gets a before/after slider; services
+// that require a consult (installation) also show a consult note.
 export default function PhotoStep({ config, service, photoUrl, onPhoto, onContinue, onBack }) {
   const svc = config.services.find((s) => s.id === service);
   const previewType = svc?.preview || 'none';
-  const filter = config.previewFilters?.[previewType]; // undefined for 'consult'/'none'
-  const isConsult = previewType === 'consult';
+  const filter = config.previewFilters?.[previewType]; // undefined if this service has no filter
+  const needsConsult = Boolean(svc?.requiresConsult);
 
   const [error, setError] = useState('');
   const inputRef = useRef(null);
@@ -30,17 +30,14 @@ export default function PhotoStep({ config, service, photoUrl, onPhoto, onContin
     }
     setError('');
     onPhoto(URL.createObjectURL(file)); // parent stores it and revokes the previous one
-    // allow re-selecting the same file later
-    e.target.value = '';
+    e.target.value = ''; // allow re-selecting the same file later
   };
 
   return (
     <div className="pest-step">
       <h2 className="pest-title">{config.photo?.prompt || 'See the transformation'}</h2>
       <p className="pest-subtitle">
-        {isConsult
-          ? 'Share a photo so our designer can plan your new pavers. It stays on your device.'
-          : config.photo?.hint || 'Upload a photo of your pavers — it stays on your device.'}
+        {config.photo?.hint || 'Upload a photo of your pavers — it stays on your device.'}
       </p>
 
       {!photoUrl && (
@@ -68,15 +65,16 @@ export default function PhotoStep({ config, service, photoUrl, onPhoto, onContin
         </div>
       )}
 
-      {photoUrl && !isConsult && filter && (
+      {photoUrl && filter && (
         <BeforeAfter src={photoUrl} filter={filter.css} sheen={filter.sheen} afterLabel={filter.afterLabel} />
       )}
-
-      {photoUrl && isConsult && (
+      {photoUrl && !filter && (
         <div className="pest-photo-consult">
           <img className="pest-ba-img" src={photoUrl} alt="Your pavers" draggable="false" />
-          <div className="pest-range-caption">Saved for your on-site design consult.</div>
         </div>
+      )}
+      {photoUrl && needsConsult && (
+        <div className="pest-range-caption">A quick on-site design consult finalizes your new install.</div>
       )}
 
       {photoUrl && (
